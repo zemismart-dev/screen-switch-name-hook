@@ -1,13 +1,13 @@
 {
   "domain": "zha_namehook",
   "name": "Screen Switch Name Hook",
+  "after_dependencies": ["matter", "zeroconf", "zha"],
   "codeowners": ["@zemismart-dev"],
   "config_flow": true,
   "dependencies": [],
-  "after_dependencies": ["matter", "zeroconf", "zha"],
   "documentation": "https://github.com/zemismart-dev/screen-switch-name-hook#readme",
-  "issue_tracker": "https://github.com/zemismart-dev/screen-switch-name-hook/issues",
   "iot_class": "local_push",
+  "issue_tracker": "https://github.com/zemismart-dev/screen-switch-name-hook/issues",
   "requirements": [],
   "version": "2.3.0"
 }
