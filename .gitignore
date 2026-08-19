@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+._*
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+dist/

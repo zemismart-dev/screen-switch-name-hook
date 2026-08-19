@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "protocol": {
+    "control": "Matter",
+    "screen_name": "Zemismart uHome UDP JSON",
+    "udp_port": 3678,
+    "mdns_service": "_matter._tcp.local."
+  },
+  "products": [
+    {
+      "gangs": 1,
+      "matter_vid": 5020,
+      "matter_vid_hex": "0x139C",
+      "matter_pid": 43832,
+      "matter_pid_hex": "0xAB38",
+      "uhome_spid": 4929,
+      "uhome_spid_hex": "0x1341",
+      "endpoints": [1]
+    },
+    {
+      "gangs": 2,
+      "matter_vid": 5020,
+      "matter_vid_hex": "0x139C",
+      "matter_pid": 43833,
+      "matter_pid_hex": "0xAB39",
+      "uhome_spid": 4930,
+      "uhome_spid_hex": "0x1342",
+      "endpoints": [1, 2]
+    },
+    {
+      "gangs": 3,
+      "matter_vid": 5020,
+      "matter_vid_hex": "0x139C",
+      "matter_pid": 43840,
+      "matter_pid_hex": "0xAB40",
+      "uhome_spid": 4927,
+      "uhome_spid_hex": "0x133F",
+      "endpoints": [1, 2, 3]
+    },
+    {
+      "gangs": 4,
+      "matter_vid": 5020,
+      "matter_vid_hex": "0x139C",
+      "matter_pid": 43831,
+      "matter_pid_hex": "0xAB37",
+      "uhome_spid": 4928,
+      "uhome_spid_hex": "0x1340",
+      "endpoints": [1, 2, 3, 4]
+    }
+  ],
+  "release_validation": {
+    "home_assistant_core": "2026.8.0",
+    "home_assistant_os": "17.3",
+    "live_tested_matter_pids": [43833],
+    "matrix_source": "Zemismart developer handoff and captured device traffic"
+  }
+}

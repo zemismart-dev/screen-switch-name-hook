@@ -1,0 +1,59 @@
+set_display_name:
+  name: Set ZHA display name
+  description: Write a display name directly to a Tuya ZHA screen-switch channel.
+  fields:
+    ieee:
+      name: IEEE
+      description: ZHA IEEE address of the screen switch.
+      required: true
+      example: "a4:c1:38:ce:eb:4f:18:88"
+      selector:
+        text:
+    channel:
+      name: Channel
+      description: Screen-switch channel number.
+      required: true
+      example: 1
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+    name:
+      name: Name
+      description: Display name to show on the switch screen. Leading and trailing spaces are removed.
+      required: true
+      example: "Meeting Room"
+      selector:
+        text:
+
+sync_entity_name:
+  name: Sync entity name
+  description: Sync an entity registry name to its Tuya ZHA channel, supported Zemismart Matter screen endpoint, or standard Matter User Label endpoint. Zemismart Matter writes are identity checked and read back.
+  fields:
+    entity_id:
+      name: Entity
+      description: ZHA or Matter switch entity whose display name should be synced.
+      required: true
+      selector:
+        entity:
+          domain:
+            - light
+            - switch
+    channel:
+      name: Channel or endpoint
+      description: Optional channel or Matter endpoint override. If omitted, the value is inferred from the entity id, unique id, or configuration.
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+    name:
+      name: Name
+      description: Optional display name override. If omitted, the entity registry name is used. Zemismart Matter names are limited to 12 Unicode code points.
+      required: false
+      example: "Meeting Room"
+      selector:
+        text:

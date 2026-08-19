@@ -1,0 +1,35 @@
+{
+  "title": "Screen Switch Name Hook",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Screen Switch Name Hook",
+        "description": "Synchronize Home Assistant entity names to supported Zemismart Matter and Tuya ZHA screen switches. Matter IP addresses are discovered automatically; no device address is stored."
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Screen Switch Name Hook is already configured."
+    }
+  },
+  "exceptions": {
+    "entity_not_found": {
+      "message": "Entity {entity_id} was not found in the entity registry."
+    },
+    "device_not_found": {
+      "message": "Entity {entity_id} is not linked to a device."
+    },
+    "name_missing": {
+      "message": "Entity {entity_id} does not have a display name to synchronize."
+    }
+  },
+  "services": {
+    "set_display_name": {
+      "name": "Set ZHA display name",
+      "description": "Write a name directly to a configured Tuya ZHA screen-switch channel."
+    },
+    "sync_entity_name": {
+      "name": "Sync entity display name",
+      "description": "Synchronize an entity name to its physical screen-switch endpoint with identity and readback verification."
+    }
+  }
+}

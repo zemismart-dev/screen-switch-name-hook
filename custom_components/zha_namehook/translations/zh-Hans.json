@@ -1,0 +1,35 @@
+{
+  "title": "屏显开关名称同步",
+  "config": {
+    "step": {
+      "user": {
+        "title": "设置屏显开关名称同步",
+        "description": "将 Home Assistant 实体名称同步到支持的 Zemismart Matter 和 Tuya ZHA 屏显开关。Matter 设备地址会自动发现，不需要填写或保存设备 IP。"
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "屏显开关名称同步已经配置。"
+    }
+  },
+  "exceptions": {
+    "entity_not_found": {
+      "message": "实体注册表中找不到实体 {entity_id}。"
+    },
+    "device_not_found": {
+      "message": "实体 {entity_id} 没有关联设备。"
+    },
+    "name_missing": {
+      "message": "实体 {entity_id} 没有可同步的显示名称。"
+    }
+  },
+  "services": {
+    "set_display_name": {
+      "name": "设置 ZHA 屏显名称",
+      "description": "直接写入已配置的 Tuya ZHA 屏显开关通道。"
+    },
+    "sync_entity_name": {
+      "name": "同步实体屏显名称",
+      "description": "将实体名称同步到实体开关屏幕，并执行设备身份与写后回读校验。"
+    }
+  }
+}
