@@ -1,45 +1,49 @@
-# Screen Switch Name Hook 客户安装说明
+# Screen Switch Name Hook — Customer Installation
 
-版本：2.3.0
+Version: 2.3.0
 
-[English](README_EN.md) · [更新记录](CHANGELOG.md) · [支持型号 JSON](SUPPORTED_MODELS.json)
+[Zemismart website](https://www.zemismart.com/) · [简体中文](README.zh-CN.md) · [Changelog](CHANGELOG.md) · [Supported models JSON](SUPPORTED_MODELS.json)
 
-[![在 Home Assistant 中打开 HACS 仓库](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=zemismart-dev&repository=screen-switch-name-hook&category=integration)
+## About Zemismart
 
-## 用途
+Zemismart offers smart home products including smart switches, motors for blinds and curtains, lighting, sensors, and gateways. Explore the product range at [www.zemismart.com](https://www.zemismart.com/).
 
-本集成把 Home Assistant 中每一路开关实体的“名称”同步到 Zemismart 屏显开关的实体屏幕，可由 Zigbee（ZHA）和 Matter 设备共用：
+[![Open this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=zemismart-dev&repository=screen-switch-name-hook&category=integration)
 
-- Matter 继续负责开关控制，屏幕名称通过设备的 uHome 局域网协议写入。
-- Zigbee 继续由 ZHA 控制，屏幕名称通过设备 endpoint 1 的 Tuya MCU `0xEF00` 名称 DP 写入。
+## Purpose
 
-Matter 客户不需要填写设备 IP。集成会根据 Home Assistant Matter 设备的 operational network ID，通过 `_matter._tcp.local` 精确发现当前 IPv4 地址，并在写入前校验设备 MAC、SPID 和有效 endpoint 集合。Zigbee 设备不使用 IP，但必须已经通过 ZHA 接入并具有正确的 Tuya 名称 DP 映射。
+This integration synchronizes each Home Assistant switch entity name to the physical display of a supported Zemismart screen switch. Zigbee (ZHA) and Matter devices share the same integration:
 
-## 支持的 Matter 型号
+- Matter remains responsible for relay control; screen labels use the device's local uHome protocol.
+- Zigbee remains controlled by ZHA; screen labels use the Tuya MCU `0xEF00` name datapoint on endpoint 1.
 
-所有已验证型号的 Matter VID 均为 `5020 / 0x139C`。
+Matter customers do not enter an IP address. The integration uses the Matter operational network ID and `_matter._tcp.local` to find the current IPv4 address, then validates MAC, SPID, and the exact active endpoint set before every write path. Zigbee devices do not use IP, but must already be joined through ZHA and have the correct Tuya name-DP mapping.
 
-| 路数 | Matter PID | uHome SPID | 有效 endpoint |
+## Supported Matter products
+
+All verified products use Matter VID `5020 / 0x139C`.
+
+| Gangs | Matter PID | uHome SPID | Active endpoints |
 | --- | --- | --- | --- |
-| 1 路 | `43832 / 0xAB38` | `4929 / 0x1341` | `1` |
-| 2 路 | `43833 / 0xAB39` | `4930 / 0x1342` | `1, 2` |
-| 3 路 | `43840 / 0xAB40` | `4927 / 0x133F` | `1, 2, 3` |
-| 4 路 | `43831 / 0xAB37` | `4928 / 0x1340` | `1, 2, 3, 4` |
+| 1 | `43832 / 0xAB38` | `4929 / 0x1341` | `1` |
+| 2 | `43833 / 0xAB39` | `4930 / 0x1342` | `1, 2` |
+| 3 | `43840 / 0xAB40` | `4927 / 0x133F` | `1, 2, 3` |
+| 4 | `43831 / 0xAB37` | `4928 / 0x1340` | `1, 2, 3, 4` |
 
-请勿只按路数猜测 PID；4 路 PID 为 `0xAB37`。SPID 不是 Matter PID。
+Do not infer the PID from the gang count. The 4-gang PID is `0xAB37`. SPID is not the Matter PID.
 
-## Zigbee（ZHA）支持范围
+## Zigbee (ZHA) support
 
-Zigbee 与 Matter 使用同一个集成入口和同一个 `zha_namehook.sync_entity_name` 操作，但底层协议不同。ZHA 默认名称 DP 为：
+Zigbee and Matter use the same integration entry and the same `zha_namehook.sync_entity_name` action, but use different transports. The default ZHA name DPs are:
 
-| 通道 | 默认名称 DP |
+| Channel | Default name DP |
 | --- | --- |
 | 1 | `105` |
 | 2 | `106` |
 | 3 | `107` |
 | 4 | `108` |
 
-只有抓包、设备文档或现有 quirk 已确认采用这些 DP 的 Tuya/Zemismart 屏显开关才能直接使用。其他 Zigbee 型号必须在 `configuration.yaml` 中填写实体通道和名称 DP，不能只根据“几路开关”盲写：
+Use these defaults only for Tuya/Zemismart screen switches whose capture, product documentation, or quirk confirms that mapping. Other Zigbee models require explicit entity-channel and name-DP overrides in `configuration.yaml`. Do not write guessed DPs based only on the number of gangs:
 
 ```yaml
 zha_namehook:
@@ -51,103 +55,103 @@ zha_namehook:
     switch.screen_switch_2: 107
 ```
 
-修改 YAML 后重启 Home Assistant。界面中已经添加的集成无需删除。不同型号的 DP 可能不同，上面的 `106/107` 仅演示如何覆盖，不代表通用值。
+Restart Home Assistant after changing YAML. The existing UI integration entry can remain installed. The `106/107` values above demonstrate an override and are not universal values.
 
-## 安装
+## Installation
 
-### HACS 安装（推荐）
+### Install with HACS (recommended)
 
-1. 确认 Home Assistant 已安装并配置 HACS。
-2. 点击上方“在 Home Assistant 中打开 HACS 仓库”按钮。
-3. 如果没有自动打开，在 HACS 中添加自定义仓库：
-   `https://github.com/zemismart-dev/screen-switch-name-hook`，类别选择“集成”。
-4. 在 HACS 中下载 `Screen Switch Name Hook`。
-5. 重启 Home Assistant Core。
-6. 打开“设置 → 设备与服务 → 添加集成”。
-7. 搜索 `Screen Switch Name Hook` 或“屏显开关名称同步”，点击提交。
-8. 确认目标开关已经通过 Matter 集成或 ZHA 正常配对，并能分别控制每一路。
+1. Make sure HACS is installed and configured in Home Assistant.
+2. Click the “Open this repository in HACS” button above.
+3. If it does not open automatically, add
+   `https://github.com/zemismart-dev/screen-switch-name-hook` as a HACS custom repository with category “Integration”.
+4. Download `Screen Switch Name Hook` in HACS.
+5. Restart Home Assistant Core.
+6. Open Settings → Devices & services → Add integration.
+7. Search for `Screen Switch Name Hook` (or `屏显开关名称同步` in a Chinese interface) and submit the setup form.
+8. Confirm that the target switch is paired through Matter or ZHA and that every relay endpoint can be controlled.
 
-### 手动安装
+### Manual installation
 
-1. 从 GitHub Releases 下载发布 ZIP，或下载仓库源码。
-2. 把 `custom_components/zha_namehook` 整个目录复制到 Home Assistant 的 `/config/custom_components/`。
-3. 重启 Home Assistant Core。
-4. 打开“设置 → 设备与服务 → 添加集成”，搜索并添加 `Screen Switch Name Hook`。
+1. Download the release ZIP from [Releases](https://github.com/zemismart-dev/screen-switch-name-hook/releases) or download the repository source.
+2. Copy the complete `custom_components/zha_namehook` folder to `/config/custom_components/`.
+3. Restart Home Assistant Core.
+4. Open Settings → Devices & services → Add integration and add `Screen Switch Name Hook`.
 
-老版本使用 `configuration.yaml` 的客户仍可保留 `zha_namehook:`；新客户不需要修改 YAML。
+Legacy installations may keep `zha_namehook:` in `configuration.yaml`. New installations do not require YAML.
 
-## 修改屏幕名称
+## Changing a screen name
 
-推荐方法：打开“设置 → 设备与服务 → 实体”，进入某一路开关实体，修改该实体的“名称”并保存。Matter 会优先按 entity unique ID 取得 endpoint；ZHA 会使用 YAML 映射，未配置时才按常见实体 ID 后缀推断通道。
+Recommended: open Settings → Devices & services → Entities, open one switch endpoint, change its Name, and save. Matter endpoint selection prefers the entity unique ID. ZHA uses the YAML mapping and falls back to common entity-ID channel suffixes only when no mapping is configured.
 
-请注意：只修改 `entity_id`（例如把 `switch.smart_switch_switch_1` 改成另一个实体 ID）不等于修改实体“名称”，不会触发屏显同步。
+Changing only the `entity_id` (for example, renaming `switch.smart_switch_switch_1` to another entity ID) does not change the entity Name and does not trigger screen synchronization.
 
-也可以在“开发者工具 → 操作”中调用：
+You can also call this action from Developer tools → Actions:
 
 ```yaml
 action: zha_namehook.sync_entity_name
 data:
   entity_id: switch.smart_switch_switch_1
-  name: 客厅灯
+  name: Living Room
 ```
 
-省略 `name` 时会使用实体当前名称。`channel` 通常不需要填写，仅用于特殊情况下手动覆盖 endpoint。
+Omit `name` to use the current entity name. `channel` is normally unnecessary and is provided only as an endpoint override.
 
-ZHA 还可以直接调用专用操作：
+ZHA also has a direct action:
 
 ```yaml
 action: zha_namehook.set_display_name
 data:
   ieee: "00:11:22:33:44:55:66:77"
   channel: 1
-  name: 客厅灯
+  name: Living Room
 ```
 
-这里的 IEEE 必须替换成客户自己的 ZHA 设备地址；不要把真实 IEEE 发布到公开日志或工单。
+Replace the IEEE value with the customer's ZHA device address. Never publish a real IEEE in public logs or issues.
 
-## 名称规则
+## Name rules
 
-- 自动去除首尾空格。
-- Matter uHome 名称最多 12 个 Unicode code point；超过部分会截断，不会从中文 UTF-8 字节中间截断。
-- 不允许空名称。
-- 不做 Unicode normalization。
-- Emoji 和少数字符能否正确显示取决于设备字体。
-- Matter 每次只写一个 endpoint，并在写入后读取设备状态确认完全相等。
-- ZHA 名称以 UTF-8 原始字节写入 Tuya DP；实际长度和字体限制取决于该 Zigbee 固件。
+- Leading and trailing whitespace is removed.
+- Matter uHome names are limited to 12 Unicode code points; extra characters are truncated without splitting a UTF-8 Chinese character.
+- Empty names are rejected.
+- Unicode normalization is not applied.
+- Emoji and uncommon characters depend on the device font.
+- Matter writes one endpoint per request and requires exact device readback.
+- ZHA writes raw UTF-8 bytes to the Tuya DP; actual length and font limits depend on that Zigbee firmware.
 
-## 网络要求
+## Network requirements
 
-- 下列网络要求仅适用于 Matter uHome 路由；Zigbee 路由只要求设备正常连接到同一套 ZHA。
-- Home Assistant 主机与 Matter 开关必须处于可互通的可信局域网。
-- 网络必须允许 Matter mDNS `_matter._tcp.local`。
-- 网络必须允许 Home Assistant 到设备的 UDP `3678`。
-- 不支持访客 Wi-Fi/AP 隔离，跨 VLAN 时需正确转发 mDNS 和 UDP 3678。
-- uHome UDP 3678 是无加密、无鉴权的厂家私有协议，不应暴露到互联网。
+- These network requirements apply only to the Matter uHome route. Zigbee only requires the device to remain connected to the same ZHA instance.
+- Home Assistant and the Matter switch must be on a mutually reachable trusted LAN.
+- Matter mDNS `_matter._tcp.local` must be available.
+- UDP 3678 from Home Assistant to the device must be allowed.
+- Guest Wi-Fi/AP isolation is unsupported. Routed VLANs require correct mDNS and UDP 3678 forwarding.
+- uHome UDP 3678 is a vendor-private, unauthenticated cleartext protocol. Never expose it to the Internet.
 
-## Matter 可靠性与安全保护
+## Matter reliability and safety controls
 
-- 不保存固定 IP；设备 DHCP 地址变化后会按精确 Matter mDNS 身份重新绑定。
-- 缓存 IP 超时时先在同一 IP 快速复查，再刷新 mDNS。
-- 写入 ACK 丢失时先读取屏幕名称；只有读回一致才判定成功。
-- 同一路连续改名使用 latest-wins，排队中的旧名称不会覆盖新名称。
-- 写入前后严格校验回复来源 IP/端口、消息类型、请求 ID、success、MAC、SPID 和有效 endpoint 集合。
-- 名称协议不会下发 Matter OnOff；名称测试后仍应按现场安全要求确认开关状态。
+- No fixed IP is stored; an address change triggers exact Matter mDNS rebinding.
+- A cached-address timeout gets a quick same-address retry before mDNS refresh.
+- If the write ACK is lost, the physical name is read back and success is accepted only on an exact match.
+- Rapid changes on one endpoint are serialized with latest-wins behavior; an older queued name cannot overwrite the latest name.
+- Source IP/port, message type, request ID, success, MAC, SPID, and the exact active endpoint set are strictly validated before and after writes.
+- The name protocol does not issue Matter OnOff commands. Still confirm the relay state required by the site after testing.
 
-## 故障排查
+## Troubleshooting
 
-1. 在“设置 → 系统 → 日志”搜索 `zha_namehook`。
-2. 在集成页面下载诊断；诊断不包含设备 IP、MAC、Matter operational ID 或名称。
-3. Matter：确认开关控制正常，并确认 mDNS 与 UDP 3678 未被防火墙拦截。
-4. Zigbee：确认使用 ZHA、设备存在输入 cluster `0xEF00`，并核对该型号真实名称 DP。
-5. Matter 不要只看 HTTP 成功；以日志中的 `uHome screen name verified` 和设备回读为准。
-6. ZHA 日志 `Tuya ZHA display name sent` 表示帧已交给 Zigbee 栈，不等同于设备屏幕回读；交付时需要观察实体屏幕确认。
+1. Search Home Assistant logs for `zha_namehook`.
+2. Download integration diagnostics. Diagnostics omit device IP, MAC, Matter operational ID, and names.
+3. Matter: confirm normal relay control and that mDNS and UDP 3678 are not blocked.
+4. Zigbee: confirm ZHA is in use, input cluster `0xEF00` exists, and the model's real name DP is mapped.
+5. Matter: require `uHome screen name verified` and device readback; an HTTP response alone is not proof.
+6. ZHA: `Tuya ZHA display name sent` means the frame was handed to the Zigbee stack, not that the screen was read back. Observe the physical display during delivery validation.
 
-## 已验证范围
+## Validated scope
 
-- Home Assistant Core：`2026.8.0`
-- Home Assistant OS：`17.3`
-- 实机：2 路 Matter PID `0xAB39`、uHome SPID `0x1342`、固件观察值 `3.7`
-- 1/3/4 路参数来自同一已验证开发交付矩阵，但本次 Home Assistant 客户版发布前未在这台公司 HA 上逐台回归。
-- ZHA 路由沿用原有 Tuya `0xEF00` 名称 DP 实现；具体 Zigbee 型号是否支持必须以该型号抓包/DP 表和实体屏幕验证为准。
+- Home Assistant Core `2026.8.0`
+- Home Assistant OS `17.3`
+- Live device: 2-gang Matter PID `0xAB39`, uHome SPID `0x1342`, observed firmware `3.7`
+- The 1/3/4-gang parameters come from the same validated development handoff matrix, but those products were not each rerun on this company Home Assistant host for this release.
+- The ZHA route retains the existing Tuya `0xEF00` name-DP implementation. Each Zigbee model still requires capture/DP-table evidence and physical screen validation.
 
-正式批量交付前，建议每个 PID 至少在目标网络与目标 HA 版本上完成一次实体改名、屏幕观察、状态读回和 DHCP 地址变化测试。
+Before a large rollout, validate each PID once on the customer's Home Assistant version and network, including entity rename, physical display observation, status readback, and DHCP address change.
